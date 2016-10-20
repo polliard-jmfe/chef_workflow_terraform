@@ -53,7 +53,7 @@ end
 terraform_state_dir = "#{node['delivery']['change']['project']}/#{workflow_chef_environment_for_stage}/terraform.tfstate"
 
 execute 'Run terraform init' do
-  command "terraform init -backend=s3 \
+  command "#{terraform_cmd} init -backend=s3 \
     -backend-config='bucket=#{node['chef_workflow_terraform']['s3_bucket_name']}' \
     -backend-config='key=#{terraform_state_dir}' \
     -backend-config='acl=bucket-owner-full-control' \
