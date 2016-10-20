@@ -1,0 +1,94 @@
+variable "aws_resource_prefix" {
+    type = "string"
+    description = "String to prepend to the name of resources created in AWS"
+}
+
+variable "aws_region" {
+    type = "string"
+    description = "AWS region to deploy in. Ex: us-west-1"
+}
+
+variable "ec2_instance_type" {
+    type = "string"
+    description = "AWS EC2 instance type. Ex: t2.small"
+}
+
+variable "ec2_ami_id" {
+    type = "string"
+    description = "EC2 AMI ID to use for provisioned instances"
+}
+
+variable "ec2_login_user" {
+    type = "string"
+    description = "User account for logging into the EC2 instance"
+}
+
+variable "ec2_keypair_name" {
+    type = "string"
+    description = "EC2 SSH Key Pair Name"
+}
+
+variable "ec2_connection_type" {
+    type = "string"
+    description = "Protocol for connecting to the EC2 instance (ssh, winrm)"
+}
+
+variable "vpc_security_groups" {
+    type = "list"
+    description = "List of VPC Security Group IDs to apply to the instance"
+}
+
+variable "vpc_subnet" {
+    type = "string"
+    description = "VPC Subnet to deploy instance within"
+}
+
+variable "chef_server_url" {
+    type = "string"
+    description = "Chef Server URL"
+}
+
+variable "chef_user_name" {
+    type = "string"
+    description = "Chef Server user name"
+}
+
+variable "chef_environment" {
+    type = "string"
+    description = "Chef Server Environment name"
+}
+
+variable "chef_cookbook" {
+    type = "string"
+    description = "Cookbook to run during provisioning"
+}
+
+provider "aws" {
+    region = "${var.aws_region}"
+}
+
+resource "aws_instance" "chef-workflow-environment-node" {
+    ami = "${var.ec2_ami_id}"
+    instance_type = "${var.ec2_instance_type}"
+    tags {
+        Name = "${var.aws_resource_prefix}-${var.chef_cookbook}-${var.chef_environment}"
+    }
+    key_name = "${var.ec2_keypair_name}"
+    vpc_security_group_ids = "${var.vpc_security_groups}"
+    subnet_id = "${var.vpc_subnet}"
+    provisioner "chef"  {
+        environment = "${var.chef_environment}"
+        run_list = ["delivery-base::default", "${var.chef_cookbook}::default"]
+        node_name = "${var.chef_cookbook}-${var.chef_environment}"
+        server_url = "${var.chef_server_url}"
+        fetch_chef_certificates = true
+        recreate_client = true
+        user_name = "${var.chef_user_name}"
+        user_key = "${file("chef_user_key.pem")}"
+        connection {
+            type = "${var.ec2_connection_type}"
+            user = "${var.ec2_login_user}"
+            private_key = "${file("aws_ssh_key.pem")}"
+        }
+    }
+}

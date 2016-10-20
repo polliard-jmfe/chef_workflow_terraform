@@ -1,15 +1,12 @@
 name 'chef_workflow_terraform'
-maintainer 'The Authors'
-maintainer_email 'you@example.com'
+maintainer 'John Byrne'
+maintainer_email 'johnb@chef.io'
 license 'all_rights'
-description 'Installs/Configures chef_workflow_terraform'
-long_description 'Installs/Configures chef_workflow_terraform'
+description 'Chef Workflow provision recipe using Terraform and AWS EC2'
+long_description 'Chef Workflow provision recipe using Terraform AWS EC2'
 version '0.1.0'
 
-# If you upload to Supermarket you should set this so your cookbook
-# gets a `View Issues` link
-# issues_url 'https://github.com/<insert_org_here>/chef_workflow_terraform/issues' if respond_to?(:issues_url)
+issues_url 'https://github.com/johnbyrneio/chef_workflow_terraform/issues' if respond_to?(:issues_url)
+source_url 'hhttps://github.com/johnbyrneio/chef_workflow_terraform' if respond_to?(:source_url)
 
-# If you upload to Supermarket you should set this so your cookbook
-# gets a `View Source` link
-# source_url 'https://github.com/<insert_org_here>/chef_workflow_terraform' if respond_to?(:source_url)
+depends 'delivery-sugar'

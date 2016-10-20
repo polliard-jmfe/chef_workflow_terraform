@@ -1,4 +1,3 @@
 # chef_workflow_terraform
 
-TODO: Enter the cookbook description here.
-
+Chef Workflow provision recipe using Terraform AWS EC2
