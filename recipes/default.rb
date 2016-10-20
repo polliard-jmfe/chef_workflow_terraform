@@ -50,7 +50,7 @@ template "#{terraform_module_dir}/main.tf" do
 end
 
 # Initialize the Terraform plan
-terraform_state_dir = "node['delivery']['change']['project']}/#{workflow_chef_environment_for_stage}/terraform.tfstate"
+terraform_state_dir = "#{node['delivery']['change']['project']}/#{workflow_chef_environment_for_stage}/terraform.tfstate"
 
 execute 'Run terraform init' do
   command "terraform init -backend=s3 \
