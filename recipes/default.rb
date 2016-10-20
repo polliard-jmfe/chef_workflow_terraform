@@ -50,10 +50,13 @@ template "#{terraform_module_dir}/main.tf" do
 end
 
 # Initialize the Terraform plan
+
+terraform_state_dir = "node['delivery']['change']['project']}/#{workflow_chef_environment_for_stage}/terraform.tfstate"
+
 execute 'Run terraform init' do
   command "terraform init -backend=s3 \
     -backend-config='bucket=#{node['chef_workflow_terraform']['s3_bucket_name']}' \
-    -backend-config='key=#{node['delivery']['change']['project']}-#{workflow_chef_environment_for_stage}/terraform.tfstate' \
+    -backend-config='key=#{terraform_state_dir}' \
     -backend-config='acl=bucket-owner-full-control' \
     -backend-config='region=#{node['chef_workflow_terraform']['s3_bucket_region']}' \
     #{terraform_module_dir}"
