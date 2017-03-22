@@ -13,11 +13,6 @@ variable "ec2_instance_type" {
     description = "AWS EC2 instance type. Ex: t2.small"
 }
 
-variable "ec2_ami_id" {
-    type = "string"
-    description = "EC2 AMI ID to use for provisioned instances"
-}
-
 variable "ec2_login_user" {
     type = "string"
     description = "User account for logging into the EC2 instance"
@@ -67,8 +62,18 @@ provider "aws" {
     region = "${var.aws_region}"
 }
 
+data "aws_ami" "rhel_ami" {
+  most_recent = true
+  owners      = ["self"]
+
+  filter {
+    name   = "tag:Kitchen"
+    values = ["RHEL72Encrypted"]
+  }
+}
+
 resource "aws_instance" "chef-workflow-environment-node" {
-    ami = "${var.ec2_ami_id}"
+    ami = "${data.aws_ami.rhel_ami.id}"
     instance_type = "${var.ec2_instance_type}"
     tags {
         Name = "${var.aws_resource_prefix}-${var.chef_cookbook}-${var.chef_environment}"
@@ -83,8 +88,8 @@ resource "aws_instance" "chef-workflow-environment-node" {
         server_url = "${var.chef_server_url}"
         fetch_chef_certificates = true
         recreate_client = true
-        user_name = "${var.chef_user_name}"
-        user_key = "${file("chef_user_key.pem")}"
+        validation_client_name = "${var.chef_user_name}"
+        validation_key = "${file("chef_user_key.pem")}"
         connection {
             type = "${var.ec2_connection_type}"
             user = "${var.ec2_login_user}"
